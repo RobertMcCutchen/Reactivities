@@ -1,20 +1,34 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Card, Image, Button } from 'semantic-ui-react';
-import { IActivity } from '../../../app/models/activity';
 import ActivityStore from '../../../app/stores/activityStore';
 import { observer } from 'mobx-react-lite';
+import { RouteComponentProps } from 'react-router';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
+import { Link } from 'react-router-dom';
 
-interface IProps {
-    setEditMode: (editMode: boolean) => void;
-    setSelectedActivity: (activity: IActivity | null) => void;
+interface DetailParams {
+    id: string
 }
 
-const ActivityDetails: React.FC<IProps> = ({
-    setEditMode, 
-    setSelectedActivity
+const ActivityDetails: React.FC<RouteComponentProps<DetailParams>> = ({
+    match,
+    history
 }) => {
     const activityStore = useContext(ActivityStore);
-    const {selectedActivity: activity} = activityStore;
+    const {
+        activity, 
+        openEditForm, 
+        cancelSelectedActivity, 
+        loadActivity,
+        loadingInitial
+    } = activityStore;
+    
+    useEffect(() => {
+        loadActivity(match.params.id)
+    }, [loadActivity])
+
+    if (loadingInitial || !activity) return <LoadingComponent content='Loading activity...' />
+
     return (
         <Card fluid>
             <Image src={`/assets/categoryImages/${activity!.category}.jpg`} wrapped ui={false}/>
@@ -30,12 +44,14 @@ const ActivityDetails: React.FC<IProps> = ({
             <Card.Content extra>
                 <Button.Group widths={2}>
                     <Button 
-                        onClick={() => setEditMode(true)} 
-                        basic color='blue' 
+                        as={Link} to={`/manage/${activity.id}`}
+                        basic 
+                        color='blue' 
                         content='Edit'/>
                     <Button 
-                        onClick={() => setSelectedActivity(null)}
-                        basic color='grey' 
+                        onClick={() => history.push('/activities')} 
+                        basic 
+                        color='grey' 
                         content='Cancel'/>
                 </Button.Group>
             </Card.Content>
