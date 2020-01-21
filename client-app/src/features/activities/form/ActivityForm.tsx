@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import ActivityStore from '../../../app/stores/activityStore';
 import { observer } from 'mobx-react-lite';
 import { RouteComponentProps } from 'react-router';
-// import {Form as FinalForm, Field} from 'react-final-form';
+import { RootStoreContext } from '../../../app/stores/rootStore';
 
 interface DetailParams {
     id: string;
@@ -15,7 +15,7 @@ export const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
     match,
     history
 }) => {
-    const activityStore = useContext(ActivityStore);
+    const rootStore = useContext(RootStoreContext);
     const {
         createActivity, 
         editActivity, 
@@ -23,7 +23,7 @@ export const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
         activity: initialFormState,
         loadActivity,
         clearActivity
-    } = activityStore;
+    } = rootStore.activityStore;
     
     const [activity, setActivity] = useState<IActivity>({
         id: '',
